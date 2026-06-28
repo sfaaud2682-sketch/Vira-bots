@@ -28,12 +28,20 @@ def run_server():
     server = HTTPServer(('0.0.0.0', port), SimpleServer)
     server.serve_forever()
 
-# --- دوال التاغات ---
+# --- دوال التاغات (محدثة لتجنب أخطاء الملف الفارغ) ---
 def load_tags():
     if os.path.exists(DB_FILE):
         with open(DB_FILE, "r", encoding="utf-8") as f:
-            try: return json.load(f)
-            except: return {}
+            try: 
+                data = json.load(f)
+                if isinstance(data, dict):
+                    return data
+                return {}
+            except (json.JSONDecodeError, Exception):
+                # إذا كان الملف تالفاً، يتم إنشاء ملف فارغ جديد
+                print("⚠️ ملف tags.json كان تالفاً أو فارغاً، سيتم إعادة إنشائه.")
+                save_tags_to_file({})
+                return {}
     return {}
 
 def save_tags_to_file(data):
@@ -135,5 +143,5 @@ if __name__ == '__main__':
         application.add_handler(CallbackQueryHandler(callback_actions, pattern="^(delete_|edit_)"))
         application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message_dispatcher))
         
-        print("🚀 بوت فيرا (Vira) يعمل الآن...")
+        print("🚀 بوت فيرا (Vira) يعمل الآن بكامل الميزات...")
         application.run_polling()
