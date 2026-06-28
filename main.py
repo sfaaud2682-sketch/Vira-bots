@@ -1,7 +1,7 @@
 import os
 from telegram.ext import Application
 
-TOKEN = "8821925270:AAFmIgSuN3enTMynetNDJVSlPKU_KU60L58"
+TOKEN = "8821925270:AAEqt1jatqhrgQH6p8LTffD1av_LGArb0os"
 
 def main():
     print("🚀 ... يعمل الآن بكامل الصلاحيات والميزات (Vira) بوت فيرا")
