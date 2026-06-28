@@ -1,3 +1,4 @@
+
 import json
 import os
 import logging
@@ -28,26 +29,27 @@ def run_server():
     server = HTTPServer(('0.0.0.0', port), SimpleServer)
     server.serve_forever()
 
-# --- دوال التاغات (محدثة لتجنب أخطاء الملف الفارغ) ---
-def load_tags():
-    if os.path.exists(DB_FILE):
-        with open(DB_FILE, "r", encoding="utf-8") as f:
-            try: 
-                data = json.load(f)
-                if isinstance(data, dict):
-                    return data
-                return {}
-            except (json.JSONDecodeError, Exception):
-                # إذا كان الملف تالفاً، يتم إنشاء ملف فارغ جديد
-                print("⚠️ ملف tags.json كان تالفاً أو فارغاً، سيتم إعادة إنشائه.")
-                save_tags_to_file({})
-                return {}
-    return {}
-
+# --- دوال التاغات (محدثة لإنشاء الملف تلقائياً وحمايته من التلف) ---
 def save_tags_to_file(data):
     with open(DB_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
+def load_tags():
+    if os.path.exists(DB_FILE):
+        try:
+            with open(DB_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, dict):
+                    return data
+        except Exception:
+            pass
+    
+    # إذا كان الملف غير موجود أو تالف، يتم إنشاء ملف جديد فارغ الآن
+    print("Initializing a new tags.json file...")
+    save_tags_to_file({})
+    return {}
+
+# تحميل التاغات عند بدء التشغيل
 saved_tags = load_tags()
 ASKING_NAME, ASKING_TAG = range(2)
 
