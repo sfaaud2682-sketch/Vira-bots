@@ -161,7 +161,7 @@ async def message_dispatcher(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 if __name__ == '__main__':
     # تم ربط التوكن الخاص بك هنا
-    TOKEN = "8821925270:AAGITcz5zcvJubF-MX5m7XZI00fQaIIF7-o"
+    TOKEN = "8821925270:AAFmIgSuN3enTMynetNDJVSlPKU_KU60L58"
     
     application = ApplicationBuilder().token(TOKEN).build()
 
