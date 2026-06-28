@@ -64,7 +64,8 @@ async def save_tag(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 async def my_tags(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_chat.type != 'private' or update.effective_user.id not in BOT_ADMINS: return
+    if update.effective_chat.type != 'private' or update.effective_user.id not in BOT_ADMINS: 
+        return
     if not saved_tags:
         await update.message.reply_text("لا توجد تاغات.")
         return
@@ -106,16 +107,27 @@ async def message_dispatcher(update: Update, context: ContextTypes.DEFAULT_TYPE)
         await update.message.reply_text(saved_tags[update.message.text])
 
 if __name__ == '__main__':
-    TOKEN = os.getenv("TELEGRAM_TOKEN")
+    # سحب التوكن من المتغيرات وتأكد من إزالة أي مسافات أو رموز بالخطأ
+    TOKEN = os.getenv("TELEGRAM_TOKEN", "").strip()
+    
     if not TOKEN:
         print("❌ خطأ: التوكن غير موجود في إعدادات Render!")
     else:
-        # تشغيل خادم الويب في الخلفية
+        # تشغيل خادم الويب في الخلفية لضمان عمل الخدمة
         threading.Thread(target=run_server, daemon=True).start()
         
         application = ApplicationBuilder().token(TOKEN).build()
-        # (بقية الـ Handlers كما هي في كودك الأصلي...)
-        conv_handler = ConversationHandler(entry_points=[CommandHandler('start', start)], states={ASKING_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_name)], ASKING_TAG: [MessageHandler(filters.TEXT & ~filters.COMMAND, save_tag)]}, fallbacks=[], allow_reentry=True)
+        
+        conv_handler = ConversationHandler(
+            entry_points=[CommandHandler('start', start)], 
+            states={
+                ASKING_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_name)], 
+                ASKING_TAG: [MessageHandler(filters.TEXT & ~filters.COMMAND, save_tag)]
+            }, 
+            fallbacks=[], 
+            allow_reentry=True
+        )
+        
         application.add_handler(conv_handler)
         application.add_handler(CommandHandler('my_tags', my_tags))
         application.add_handler(CallbackQueryHandler(button_handler, pattern="^tag_"))
