@@ -107,13 +107,14 @@ async def message_dispatcher(update: Update, context: ContextTypes.DEFAULT_TYPE)
         await update.message.reply_text(saved_tags[update.message.text])
 
 if __name__ == '__main__':
-    # سحب التوكن من المتغيرات وتأكد من إزالة أي مسافات أو رموز بالخطأ
-    TOKEN = os.getenv("TELEGRAM_TOKEN", "").strip()
+    # سحب التوكن مع إزالة أي مسافات أو رموز بالخطأ تلقائياً
+    raw_token = os.getenv("TELEGRAM_TOKEN", "")
+    TOKEN = raw_token.strip().replace("\n", "").replace("\r", "")
     
     if not TOKEN:
         print("❌ خطأ: التوكن غير موجود في إعدادات Render!")
     else:
-        # تشغيل خادم الويب في الخلفية لضمان عمل الخدمة
+        # تشغيل خادم الويب في الخلفية
         threading.Thread(target=run_server, daemon=True).start()
         
         application = ApplicationBuilder().token(TOKEN).build()
